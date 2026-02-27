@@ -1,0 +1,50 @@
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The following line activates a set of recommended lints for Dart packages.
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    # Always declare return types
+    - always_declare_return_types
+    # Always put required named parameters first
+    - always_put_required_named_parameters_first
+    # Avoid bool literals in conditional expressions
+    - avoid_bool_literals_in_conditional_expressions
+    # Avoid empty else blocks
+    - avoid_empty_else
+    # Avoid function literals in foreach calls
+    - avoid_function_literals_in_foreach_calls
+    # Avoid init from instance members
+    - avoid_init_to_null
+    # Avoid null checks in equality operators
+    - avoid_null_checks_in_equality_operators
+    # Avoid positional boolean parameters
+    - avoid_positional_boolean_parameters
+    # Avoid print to console in production code
+    - avoid_print
+    # Avoid redundant argument values
+    - avoid_redundant_argument_values
+    # Avoid returning null for void
+    - avoid_returning_null_for_void
+    # Avoid slow async io
+    - avoid_slow_async_io
+    # Avoid types as parameter names
+    - avoid_types_as_parameter_names
+    # Avoid types on closure parameters when not needed
+    - avoid_types_on_closure_parameters
+    # Avoid void as return type of callback
+    - avoid_void_async
+    # Prefer is not empty
+    - prefer_is_not_empty
+    # Use // for inline comments
+    - slash_for_doc_comments
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options
