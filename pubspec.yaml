@@ -1,7 +1,7 @@
 name: piprapay
 description: A professional, production-ready Flutter package for integrating Piprapay payment gateway. Complete support for V2 and V3+ APIs with payment creation, verification, refunds, webhook validation, and comprehensive error handling.
 version: 1.0.0
-publish_to: 'https://pub.dev'
+
 repository: 'https://github.com/programmingwormhole/piprapay-flutter'
 issue_tracker: 'https://github.com/programmingwormhole/piprapay-flutter/issues'
 documentation: 'https://github.com/programmingwormhole/piprapay-flutter/wiki'

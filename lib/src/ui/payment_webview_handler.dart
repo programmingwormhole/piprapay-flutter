@@ -73,33 +73,25 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
   @override
   void initState() {
     super.initState();
-    print('🚀 WebView: Initializing with URL - ${widget.url}');
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
-            print('🌐 WebView: Page started loading - $url');
             if (mounted && !_outcomeDetected) {
               setState(() => _loading = true);
 
               // Check for cancel/fail outcomes early
               final outcome = _detectPaymentOutcome(url);
               if (outcome != null && !outcome.isSuccess) {
-                print('❌ WebView: Detected non-success outcome - closing');
                 _outcomeDetected = true;
                 if (mounted) {
                   Navigator.pop(context, outcome);
                 }
-              } else if (outcome != null) {
-                print('✅ WebView: Detected success outcome - will close after delay');
-              } else {
-                print('⏳ WebView: No outcome detected yet - continuing');
               }
             }
           },
           onPageFinished: (url) {
-            print('🌐 WebView: Page finished loading - $url');
             if (mounted) {
               setState(() => _loading = false);
 
@@ -107,7 +99,6 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
               if (!_outcomeDetected) {
                 final outcome = _detectPaymentOutcome(url);
                 if (outcome != null && outcome.isSuccess) {
-                  print('✅ WebView: Success page loaded - closing after ${widget.successPageDisplayDuration.inSeconds}s');
                   _outcomeDetected = true;
                   
                   // Let user see success page and interact with buttons
@@ -122,13 +113,10 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
           },
           onWebResourceError: (error) {
             // Only handle critical navigation errors, not resource loading errors
-            print('⚠️ WebView: Resource error - ${error.errorType}: ${error.description}');
-            
             // Only close on critical errors (navigation failures, not resource failures)
             if (error.errorType == WebResourceErrorType.hostLookup ||
                 error.errorType == WebResourceErrorType.connect ||
                 error.errorType == WebResourceErrorType.timeout) {
-              print('❌ WebView: Critical error detected - closing');
               if (mounted && !_outcomeDetected) {
                 _outcomeDetected = true;
                 Navigator.pop(
@@ -138,8 +126,6 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
                   ),
                 );
               }
-            } else {
-              print('⚠️ WebView: Non-critical error - continuing');
             }
           },
         ),
@@ -149,7 +135,6 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
 
   @override
   void dispose() {
-    print('🗑️ WebView: Disposing - outcomeDetected: $_outcomeDetected');
     super.dispose();
   }
 
@@ -159,13 +144,8 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
     final path = uri.path.toLowerCase();
     final query = uri.query.toLowerCase();
 
-    print('🔍 WebView: Checking URL for outcome');
-    print('   Path: $path');
-    print('   Query: $query');
-
     // Success detection
     if (path.contains('success') || query.contains('pp_status=completed')) {
-      print('✅ WebView: SUCCESS pattern detected');
       // Extract transaction reference from query parameters
       final transactionRef = uri.queryParameters['transaction_ref'] ??
           uri.queryParameters['pp_id'] ??
@@ -179,7 +159,6 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
         query.contains('status=cancelled') ||
         query.contains('status=cancel') ||
         query.contains('cancel')) {
-      print('⚠️ WebView: CANCEL pattern detected');
       return PaymentResult.cancelled();
     }
 
@@ -188,12 +167,10 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
         path.contains('error') ||
         query.contains('status=failed') ||
         query.contains('status=error')) {
-      print('❌ WebView: FAIL pattern detected');
       final message = uri.queryParameters['message'] ?? 'Payment processing failed';
       return PaymentResult.failed(message: message);
     }
 
-    print('⏳ WebView: No outcome pattern detected - payment in progress');
     return null;
   }
 
@@ -202,9 +179,7 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
-        print('🔙 WebView: PopScope invoked - didPop: $didPop, outcomeDetected: $_outcomeDetected');
         if (!didPop && !_outcomeDetected) {
-          print('❌ WebView: User cancelled via back button');
           _outcomeDetected = true;
           Navigator.pop(context, PaymentResult.cancelled());
         }
@@ -215,7 +190,6 @@ class _PaymentWebViewPageState extends State<_PaymentWebViewPage> {
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed: () {
-              print('❌ WebView: User cancelled via close button');
               if (!_outcomeDetected) {
                 _outcomeDetected = true;
                 Navigator.pop(context, PaymentResult.cancelled());
